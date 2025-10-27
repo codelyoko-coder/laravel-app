@@ -1,0 +1,45 @@
+<?php
+// Ganti contact@example.com dengan alamat email Anda yang sebenarnya
+$receiving_email_address = 'rizkalalpassya@gmail.com';
+
+// ----------------------------------------------------
+// 1. Ambil data dari POST
+// ----------------------------------------------------
+$name = isset($_POST['name']) ? $_POST['name'] : 'N/A';
+$email = isset($_POST['email']) ? $_POST['email'] : 'N/A';
+$subject = isset($_POST['subject']) ? $_POST['subject'] : 'Pesan dari Formulir Kontak';
+$message = isset($_POST['message']) ? $_POST['message'] : 'Tidak ada pesan.';
+$phone = isset($_POST['phone']) ? $_POST['phone'] : 'N/A';
+
+// ----------------------------------------------------
+// 2. Susun Isi Email
+// ----------------------------------------------------
+$email_content = "Detail Pesan:\n\n";
+$email_content .= "Dari: " . $name . "\n";
+$email_content .= "Email: " . $email . "\n";
+$email_content .= "Telepon: " . $phone . "\n";
+$email_content .= "---------------------------------------\n";
+$email_content .= "Pesan:\n" . $message . "\n";
+
+// ----------------------------------------------------
+// 3. Susun Header Email
+// ----------------------------------------------------
+// Penting: Selalu gunakan alamat email yang berasal dari domain server Anda di 'From'.
+// Jika tidak, email Anda kemungkinan besar akan masuk ke folder spam.
+$headers = 'From: Web Contact Form <noreply@' . $_SERVER['HTTP_HOST'] . '>' . "\r\n" .
+           'Reply-To: ' . $email . "\r\n" .
+           'X-Mailer: PHP/' . phpversion();
+
+// ----------------------------------------------------
+// 4. Kirim Email dan Berikan Respons ke JavaScript
+// ----------------------------------------------------
+if (mail($receiving_email_address, $subject, $email_content, $headers)) {
+    // Jika berhasil dikirim, kirim string 'OK' agar script JS menampilkan pesan sukses
+    echo 'OK';
+} else {
+    // Jika gagal, kirim pesan error.
+    http_response_code(500); // Set status HTTP menjadi 500 (Internal Server Error)
+    echo 'Gagal mengirim pesan. Coba cek konfigurasi mail server host Anda.';
+}
+
+?>
